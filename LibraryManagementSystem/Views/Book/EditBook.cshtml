@@ -1,0 +1,99 @@
+﻿@model Book
+@{
+    ViewData["Title"] = "EditBook";
+    SelectList optionCategories = new SelectList(ViewBag.Categories, "CategoryId", "CategoryName");
+}
+
+<div class="card shadow-lg mt-5">
+    <div class="card-header bg-success text-white text-center fw-bold">
+        Edit Book
+    </div>
+
+    <div class="card-body">
+        <form asp-action="EditBook" method="post" enctype="multipart/form-data" class="row g-3">
+
+            <input type="hidden" asp-for="BookId" />
+
+            <!-- Book Title & Author -->
+            <div class="form-floating col-md-6">
+                <input asp-for="Title" class="form-control" placeholder="Book Title" />
+                <label asp-for="Title">Book Title</label>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating col-md-6">
+                <input asp-for="Author" class="form-control" placeholder="Author" />
+                <label asp-for="Author">Author</label>
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+
+            <!-- ISBN & Category -->
+            <div class="form-floating col-md-6">
+                <input asp-for="ISBN" class="form-control" placeholder="ISBN" />
+                <label asp-for="ISBN">ISBN</label>
+                <span asp-validation-for="ISBN" class="text-danger"></span>
+            </div>
+            <div class="form-floating col-md-6">
+                <input asp-for="PublishYear" type="number" class="form-control" placeholder="Publish Year" />
+                <label asp-for="PublishYear">Publish Year</label>
+                <span asp-validation-for="PublishYear" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating col-md-6">
+                <input asp-for="AvailableCopies" type="number" class="form-control" placeholder="Available Copies" />
+                <label asp-for="AvailableCopies">Available Copies</label>
+                <span asp-validation-for="AvailableCopies" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating col-md-6">
+                <select class="form-select" asp-items="optionCategories" asp-for="CategoryId">
+                    <option value="0">Choose Category</option>
+                </select>
+                <label asp-for="CategoryId" class="form-label">Options</label>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            <!-- Description & Image -->
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <textarea asp-for="Description" class="form-control" placeholder="Description" style="height: 100px"></textarea>
+                        <label asp-for="Description">Description</label>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 d-flex flex-row align-items-center">
+                    <!-- Hidden field to keep old image path -->
+                    <input type="hidden" asp-for="Image" />
+                    @if (!string.IsNullOrEmpty(Model.Image))
+                    {
+                        <div class="mb-3">
+                            <img src="@Url.Content(Model.Image)"
+                                 alt="Book Image"
+                                 class="img-thumbnail shadow-sm"
+                                 style="max-height: 100px; object-fit: contain;" />
+                        </div>
+                    }
+                    <div class="p-2">
+                        <small class="text-muted">
+                            Leave this field empty if you don't want to change the image.
+                        </small>
+                        @* <label asp-for="Image" class="form-label mb-3" ></label>  *@
+                        <input asp-for="Image" class="form-control mb-3" type="file" name="ImageFile" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Save
+                </button>
+                <a asp-action="Index" class="btn btn-secondary px-4">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+﻿@model Book
+
+@{
+    ViewData["Title"] = "AddBook";
+    SelectList optionCategories = new SelectList(ViewBag.Categories, "CategoryId", "CategoryName");
+}
+
+<div class="card shadow-lg p-4 rounded-3 mt-2">
+    <h2 class="mb-4 text-success">
+        <i class="bi bi-book me-2"></i> Add Book
+    </h2>
+
+    <form asp-action="SaveBook" asp-controller="Book" method="post" enctype="multipart/form-data" class="row g-3">
+
+        <div class="form-floating col-md-6">
+            <input asp-for="Title" class="form-control" placeholder="Title">
+            <label asp-for="Title"></label>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating col-md-6">
+            <input asp-for="Author" class="form-control" placeholder="Author">
+            <label asp-for="Author"></label>
+            <span asp-validation-for="Author" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating col-md-6">
+            <input asp-for="ISBN" class="form-control" placeholder="ISBN">
+            <label asp-for="ISBN"></label>
+            <span asp-validation-for="ISBN" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating col-md-6">
+            <input asp-for="PublishYear" class="form-control" placeholder="Publish Year">
+            <label asp-for="PublishYear"></label>
+            <span asp-validation-for="PublishYear" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating col-md-6">
+            <input asp-for="Image" class="form-control" type="file" name="ImageFile" placeholder="Image URL" />
+            @* <input asp-for="Image" type="file" class="form-control" placeholder="Image URL"> *@
+            <label asp-for="Image"></label>
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating col-md-6">
+            <input asp-for="AvailableCopies" class="form-control" placeholder="Available Copies">
+            <label asp-for="AvailableCopies"></label>
+            <span asp-validation-for="AvailableCopies" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating col-md-12">
+            <textarea asp-for="Description" class="form-control" placeholder="Description" style="height: 100px"></textarea>
+            <label asp-for="Description"></label>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="input-group mb-3">
+            <select class="form-select"
+                    asp-items="optionCategories"
+                    asp-for="CategoryId">
+                <option value="0">Choose Category</option>
+            </select>
+            <label asp-for="CategoryId" class="input-group-text">Options</label>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <input type="submit" value="🔵 Save" class="btn btn-success px-4" />
+            <a asp-controller="Book" asp-action="Index" class="btn btn-outline-secondary px-4">🟢 Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

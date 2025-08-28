@@ -1,0 +1,63 @@
+﻿
+@model Book
+
+@{
+    ViewData["Title"] = "DetailsBook";
+}
+
+<div class="d-flex justify-content-center align-items-center min-vh-100 pt-1">
+    <div class="card shadow-lg rounded-4 mb-4 border-0"
+         style="max-width: 750px; width:100%; background: linear-gradient(135deg, #e0f7fa, #ede7f6);">
+
+        <!-- Header -->
+        <div class="card-header text-white rounded-top-4 d-flex align-items-center"
+             style="background: linear-gradient(135deg, #1976d2, #512da8);">
+            <i class="bi bi-book-half me-2"></i>
+            <h4 class="mb-0">Book Details</h4>
+        </div>
+
+        <!-- Content -->
+        <div class="card-body p-2">
+            <div class="row g-4">
+                <div class="col-md-4 d-flex align-items-center justify-content-center">
+                    <img src="@Url.Content(Model.Image)"
+                         alt="@Model.Title"
+                         class="img-fluid shadow-sm rounded-3 border"
+                         style="max-height: 260px; object-fit: contain;" />
+                </div>
+
+                <!-- Book Info -->
+                <div class="col-md-8">
+                    <h4 class="text-primary fw-bold">@Model.Title</h4>
+                    <p><i class="bi bi-person-fill me-2 text-secondary"></i><strong>Author:</strong> @Model.Author</p>
+                    <p><i class="bi bi-upc-scan me-2 text-secondary"></i><strong>ISBN:</strong> @Model.ISBN</p>
+                    <p><i class="bi bi-tags-fill me-2 text-secondary"></i><strong>Category:</strong> @Model.Category?.CategoryName</p>
+                    <p><i class="bi bi-calendar-fill me-2 text-secondary"></i><strong>Year:</strong> @Model.PublishYear</p>
+                    <p><i class="bi bi-collection me-2 text-secondary"></i><strong>Available Copies:</strong> @Model.AvailableCopies</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="card-footer bg-white bg-opacity-75  pt-2  rounded-bottom-4"
+             style="max-height: 150px; overflow-y: auto; border-top: 2px solid #ddd;">
+            <h6 class="mb-1 text-center text-primary">
+                <i class="bi bi-info-circle me-1"></i>
+                Description
+            </h6> 
+            <p class="card-text" style="white-space: pre-line;">
+                @Model.Description
+            </p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center p-3">
+            <a class="btn btn-outline-primary me-2 px-4" asp-action="Index" asp-controller="Book">
+                <i class="bi bi-journals me-1"></i> All Books
+            </a>
+            <a class="btn btn-outline-dark px-4" asp-action="Index" asp-controller="Home">
+                <i class="bi bi-house-door me-1"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>

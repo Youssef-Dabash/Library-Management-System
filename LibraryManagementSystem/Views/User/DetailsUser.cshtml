@@ -1,0 +1,86 @@
+﻿@model User
+@{
+    ViewData["Title"] = "DetailsUser";
+}
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg rounded-4" style="max-width: 550px; width:100%;">
+        <div class="card-header bg-primary text-white rounded-top-4 d-flex align-items-center">
+            <i class="bi bi-person-circle me-2 fs-5"></i>
+            <h5 class="mb-0">User Details</h5>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-person-fill me-1"></i>Full Name:</div>
+                <div class="col-sm-8">@Model.FullName</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-person-badge me-1"></i>User Name:</div>
+                <div class="col-sm-8">@Model.UserName</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-geo-alt-fill me-1"></i>Address:</div>
+                <div class="col-sm-8">@Model.Address</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-telephone-fill me-1"></i>Phone:</div>
+                <div class="col-sm-8">@Model.Phone</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-envelope-fill me-1"></i>Email:</div>
+                <div class="col-sm-8">@(Model.Email ?? "N/A")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-calendar-fill me-1"></i>Birth Date:</div>
+                <div class="col-sm-8">@(Model.BirthOfDate?.ToString("yyyy-MM-dd") ?? "N/A")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-toggle-on me-1"></i>Status:</div>
+                <div class="col-sm-8">
+                    <span class="btn @(Model.Status ? "btn-success" : "btn-danger") btn-sm rounded-pill px-3">
+                        @(Model.Status ? "Active" : "Inactive")
+                    </span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-star-fill me-1"></i>Tier:</div>
+                <div class="col-sm-8">@(ViewBag.TierNames ?? "N/A")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold"><i class="bi bi-book-fill me-1"></i>Borrowings:</div>
+                <div class="col-sm-8">
+                    @if (Model.Borrowings != null && Model.Borrowings.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var b in Model.Borrowings)
+                            {
+                                <span class="badge bg-secondary">
+                                    @b.Book.Title (@b.BorrowDate.ToString("yyyy-MM-dd"))
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span>N/A</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light text-end rounded-bottom-4">
+            <a class="btn btn-secondary px-4" asp-action="Index" asp-controller="User">
+                <i class="bi bi-arrow-left-circle me-1"></i> All Users
+            </a>
+        </div>
+    </div>
+</div>
+
