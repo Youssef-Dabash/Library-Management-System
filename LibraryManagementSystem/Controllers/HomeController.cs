@@ -17,23 +17,23 @@ namespace LibraryManagementSystem.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Book> books = context.Books.Include(b => b.Category).ToList();
+            var books = await context.Books.Include(b => b.Category).ToListAsync();
             return View("Index", books);
         }
 
-        public IActionResult AboutUs()
+        public async Task<IActionResult> AboutUs()
         {
-            ViewBag.TotalBooks = context.Books.Count();
-            ViewBag.TotalUsers = context.Users.Count();
-            ViewBag.TotalCategories = context.Categories.Count();
+            ViewBag.TotalBooks = await context.Books.CountAsync();
+            ViewBag.TotalUsers = await context.Users.CountAsync();
+            ViewBag.TotalCategories = await context.Categories.CountAsync();
             return View("AboutUs");
         }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public async Task<IActionResult> Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }

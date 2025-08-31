@@ -13,61 +13,61 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var userList = context.Users.Include(e => e.MembershipTier).ToList();
+            var userList = await context.Users.Include(e => e.MembershipTier).ToListAsync();
             return View("Index", userList);
         }
 
         [HttpGet]
-        public IActionResult AddUser()
+        public async Task<IActionResult> AddUser()
         {
-            ViewData["MembershipTier"] = context.MembershipTiers.ToList();
+            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
             return View("AddUser");
         }
 
         [HttpPost]
-        public IActionResult SaveUser(User userFromRequest)
+        public async Task<IActionResult> SaveUser(User userFromRequest)
         {
             if(ModelState.IsValid)
             {
                 if (userFromRequest.TierId == 0) userFromRequest.TierId = 1; 
-                context.Users.Add(userFromRequest);
-                context.SaveChanges();
+                await context.Users.AddAsync(userFromRequest);
+                await context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["MembershipTier"] = context.MembershipTiers.ToList();
+            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
             return View("AddUser", userFromRequest);
         }
 
-        public IActionResult DetailsUser(int id)
+        public async Task<IActionResult> DetailsUser(int id)
         {
-            var user = context.Users
+            var user = await context.Users
                 .Include(b => b.MembershipTier)
-                .FirstOrDefault(b => b.UserId == id);
+                .FirstOrDefaultAsync(b => b.UserId == id);
             ViewBag.TierNames = user?.MembershipTier.TierName;
             if (user == null) return NotFound();
             return View("DetailsUser", user);
         }
 
         [HttpGet]
-        public IActionResult EditUser(int id)
+        public async Task<IActionResult> EditUser(int id)
         {
-            User getUser = context.Users.Find(id);
+            var getUser = await context.Users.FindAsync(id);
             if(getUser == null) return NotFound();
 
-            ViewData["MembershipTier"] = context.MembershipTiers.ToList();
+            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
             return View("EditUser", getUser);
         }
 
         [HttpPost]
-        public IActionResult EditUser(int id, User userFromRequest)
+        public async Task<IActionResult> EditUser(int id, User userFromRequest)
         {
             if(id != userFromRequest.UserId) return BadRequest();
 
             if (ModelState.IsValid)
             {
-                User getUser = context.Users.Find(id);
+                var getUser = await context.Users.FindAsync(id);
                 if (getUser == null ) return NotFound();
                 if (userFromRequest.TierId == 0) userFromRequest.TierId = 1;
 
@@ -83,20 +83,20 @@ namespace LibraryManagementSystem.Controllers
                 getUser.TierId = userFromRequest.TierId;
 
                 context.Users.Update(getUser);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["MembershipTier"] = context.MembershipTiers.ToList();
+            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
             return View("EditUser", userFromRequest);
         }
 
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            User getUser = context.Users.Find(id);  
+            var getUser = await context.Users.FindAsync(id);  
             if (getUser != null)
             {
                 context.Users.Remove(getUser);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }

@@ -4,9 +4,9 @@ namespace LibraryManagementSystem.Controllers
 {
     public class BorrowingController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View("Index");
+            return View(nameof(Index));
         }
     }
 }

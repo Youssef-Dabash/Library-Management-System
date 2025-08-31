@@ -15,22 +15,22 @@ public class BookController : Controller
         webHostEnvironment = _webHostEnvironment;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var books = context.Books?.Include(b => b.Category).ToList();
+        var books = await context.Books.Include(b => b.Category).ToListAsync(); // ?
         return View("Index", books);
     }
 
     [HttpGet]
-    public IActionResult AddBook()
+    public async Task<IActionResult> AddBook()
     {
-        ViewBag.Categories = context.Categories.ToList();
-        ViewBag.Borrowings = context.Borrowings.ToList();
+        ViewBag.Categories = await context.Categories.ToListAsync();
+        ViewBag.Borrowings = await context.Borrowings.ToListAsync();
         return View("AddBook");
     }
 
     [HttpPost]
-    public IActionResult SaveBook(Book book, IFormFile? ImageFile)
+    public async Task<IActionResult> SaveBook(Book book, IFormFile? ImageFile)
     {
         if (ModelState.IsValid)
         {
@@ -55,43 +55,43 @@ public class BookController : Controller
                 book.Image = "/Images/" + uniqueFileName;
             }
 
-            context.Books.Add(book);
-            context.SaveChanges();
+            await context.Books.AddAsync(book);
+            await context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-        ViewBag.Categories = context.Categories.ToList();
-        ViewBag.Borrowings = context.Borrowings.ToList();
+        ViewBag.Categories = await context.Categories.ToListAsync();
+        ViewBag.Borrowings = await context.Borrowings.ToListAsync();
         return View("AddBook", book);
     }
 
-    public IActionResult DetailsBook(int id)
+    public async Task<IActionResult> DetailsBook(int id)
     {
-        var book = context.Books
+        var book = await context.Books
             .Include(b => b.Category)
-            .FirstOrDefault(b => b.BookId == id);
+            .FirstOrDefaultAsync(b => b.BookId == id);
 
         if (book == null) return NotFound();
         return View("DetailsBook", book);
     }
 
     [HttpGet]
-    public IActionResult EditBook(int id)
+    public async Task<IActionResult> EditBook(int id)
     {
-        Book getBook = context.Books.Find(id);
+        var getBook = await context.Books.FindAsync(id);
         if (getBook == null) return NotFound();
 
-        ViewBag.Categories = context.Categories.ToList();
+        ViewBag.Categories = await context.Categories.ToListAsync();
         return View("EditBook", getBook);
     }
 
     [HttpPost]
-    public IActionResult EditBook(int id, Book bookFromRequest, IFormFile? ImageFile)
+    public async Task<IActionResult> EditBook(int id, Book bookFromRequest, IFormFile? ImageFile)
     {
         if (id != bookFromRequest.BookId) return BadRequest();
 
         if (ModelState.IsValid)
         {
-            var getBook = context.Books.Find(id);
+            var getBook = await context.Books.FindAsync(id);
             if (getBook == null) return NotFound();
 
             if (ImageFile != null && ImageFile.Length > 0)
@@ -121,32 +121,32 @@ public class BookController : Controller
             getBook.CategoryId = bookFromRequest.CategoryId == 0 ? 5 : bookFromRequest.CategoryId;
 
             context.Books.Update(getBook);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }
 
-        ViewBag.Categories = context.Categories.ToList();
+        ViewBag.Categories = await context.Categories.ToListAsync();
         return View(bookFromRequest);
     }
 
     [HttpPost]
-    public IActionResult DeleteBook(int id)
+    public async Task<IActionResult> DeleteBook(int id)
     {
-        var getBook = context.Books.Find(id);
+        var getBook = await context.Books.FindAsync(id);
         context.Books.Remove(getBook);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult IncreaseCopies(int id)
+    public async Task<IActionResult> IncreaseCopies(int id)
     {
-        var book = context.Books.Find(id);
+        var book = await context.Books.FindAsync(id);
         if (book == null) return NotFound();
 
         book.AvailableCopies += 1;
-        context.SaveChanges();
+        await context.SaveChangesAsync();
 
         return RedirectToAction("Index", new { id = id });
     }
@@ -154,3 +154,129 @@ public class BookController : Controller
 }
 
 
+//namespace Library.Controllers
+//{
+//    public class CategoryController : Controller
+//    {
+//        private readonly LibraryDbContext _context;
+//        public CategoryController(LibraryDbContext context)
+//        {
+//            _context = context;
+//        }
+
+//        // GET: CategoryController
+//        public async Task<IActionResult> Index()
+//        {
+//            var categories = await _context.Categories
+//                .Include(c => c.Books).ToListAsync();
+//            return View(categories);
+//        }
+
+//        // GET: CategoryController/Details/5
+//        public async Task<IActionResult> Details(int id)
+//        {
+//            var category = await _context.Categories.FindAsync(id);
+//            if (category == null)
+//            {
+//                return NotFound();
+//            }
+//            return View(category);
+//        }
+
+//        // GET: CategoryController/Create
+//        public IActionResult Create()
+//        {
+//            return View();
+//        }
+
+//        // POST: CategoryController/Create
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Create(Category model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                var category = new Category()
+//                {
+//                    Id = model.Id,
+//                    Name = model.Name,
+//                    Books = model.Books
+//                };
+
+//                await _context.Categories.AddAsync(category);
+//                await _context.SaveChangesAsync();
+//                return RedirectToAction(nameof(Index));
+//            }
+//            return View(model);
+//        }
+
+//        // GET: CategoryController/Edit/5
+//        public async Task<IActionResult> Edit(int id)
+//        {
+//            if (id == 0)
+//            {
+//                return NotFound();
+//            }
+//            var category = await _context.Categories.FindAsync(id);
+//            if (category == null)
+//            {
+//                return NotFound();
+//            }
+//            return View(category);
+//        }
+
+//        // POST: CategoryController/Edit/5
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Edit(int id, Category model)
+//        {
+//            if (id != model.Id)
+//            {
+//                return NotFound();
+//            }
+//            if (ModelState.IsValid)
+//            {
+//                var category = await _context.Categories.FindAsync(id);
+//                if (category == null)
+//                {
+//                    return NotFound();
+//                }
+//                category.Name = model.Name;
+//                category.Books = model.Books;
+
+//                await _context.Update(category);
+//                await _context.SaveChangesAsync();
+//                return RedirectToAction(nameof(Index));
+//            }
+//            return View(model);
+//        }
+
+//        // GET: CategoryController/Delete/5
+//        public async Task<IActionResult> Delete(int? id)
+//        {
+//            if (id == null)
+//            {
+//                return NotFound();
+//            }
+//            var category = await _context.Categories.Find(id);
+//            if (category == null)
+//            {
+//                return NotFound();
+//            }
+//            return View(category);
+//        }
+
+//        // POST: CategoryController/Delete/5
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Delete(int id)
+//        {
+//            var category = await _context.Categories.FindAsync(id);
+
+//            await _context.Categories.Remove(category);
+//            await _context.SaveChangesAsync();
+//            return RedirectToAction(nameof(Index));
+//        }
+
+//    }
+//}

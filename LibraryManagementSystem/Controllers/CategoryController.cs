@@ -10,53 +10,54 @@ namespace LibraryManagementSystem.Controllers
         public CategoryController(ApplicationDbContext _context)
         {
             context = _context;
-
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var categories = context.Categories.Include(c => c.Books).ToList();
+            var categories = await context.Categories.Include(c => c.Books)
+                .ToListAsync();
             return View("Index", categories);
         }
 
-        [HttpGet]
         public IActionResult AddCategory()
         {
             return View("AddCategory");
         }
 
         [HttpPost]
-        public IActionResult SaveCategory(Category category)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveCategory(Category category)
         {
             if (ModelState.IsValid)
             {
-                context.Categories.Add(category);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                await context.Categories.AddAsync(category);
+                await context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
 
-        public IActionResult DetailsCategory(int id)
+        public async Task<IActionResult> DetailsCategory(int id)
         {
-            var category = context.Categories
+            var category = await context.Categories
                 .Include(c => c.Books)
-                .FirstOrDefault(c => c.CategoryId == id);
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
 
             if (category == null) return NotFound();
 
             return View("DetailsCategory", category);
         }
 
-        public IActionResult DeleteCategory(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCategory(int id)
         {
-            Category getCategory = context.Categories.Find(id);
+            var getCategory = await context.Categories.FindAsync(id);
             if (getCategory != null)
             {
                 context.Categories.Remove(getCategory);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
     }

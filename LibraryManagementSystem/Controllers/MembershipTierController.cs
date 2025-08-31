@@ -14,40 +14,39 @@ namespace LibraryManagementSystem.Controllers
         }
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var tiers = context.MembershipTiers.Include(t => t.Users).ToList();
+            var tiers = await context.MembershipTiers.Include(t => t.Users).ToListAsync();
             return View(tiers);
         }
 
         [HttpGet]
-        public IActionResult EditTier(int id)
+        public async Task<IActionResult> EditTier(int id)
         {
-            MembershipTier getTier = context.MembershipTiers.Find(id);
+            var getTier = await context.MembershipTiers.FindAsync(id);
             if (getTier == null) return NotFound();
 
             return View("EditTier", getTier);
         }
 
         [HttpPost]
-        public IActionResult EditTier(int id, MembershipTier tierFormRequest)
+        public async Task<IActionResult> EditTier(int id, MembershipTier tierFormRequest)
         {
             if (id != tierFormRequest.TierId) return BadRequest();
 
             if (ModelState.IsValid)
             {
-                MembershipTier getTier = context.MembershipTiers.Find(id);
+                var getTier =  await context.MembershipTiers.FindAsync(id);
                 if (getTier == null) return NotFound();
                 getTier.ExtraBooks = tierFormRequest.ExtraBooks;
                 getTier.ExtraDays = tierFormRequest.ExtraDays;
                 getTier.ExtraPenalty = tierFormRequest.ExtraPenalty;
 
                 context.MembershipTiers.Update(getTier);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View("EditTier", tierFormRequest);
         }
-
     }
 }
