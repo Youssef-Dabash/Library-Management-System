@@ -25,7 +25,6 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveCategory(Category category)
         {
             if (ModelState.IsValid)
@@ -48,7 +47,6 @@ namespace LibraryManagementSystem.Controllers
             return View("DetailsCategory", category);
         }
 
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var getCategory = await context.Categories.FindAsync(id);

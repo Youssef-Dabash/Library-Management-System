@@ -9,10 +9,10 @@
             👤 All Users in Library
         </h2>
         <div class="class=" d-flex gap-2"">
-            <a asp-controller="User" asp-action="AddUser" class="btn btn-success px-4">
+            <a asp-controller="User" asp-action="AddUser" class="btn btn-success px-4 rounded-pill">
                 <i class="bi bi-plus-circle me-1"></i> Add New User
             </a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 rounded-pill">
                 <i class="bi bi-arrow-left-circle me-1"></i> Back
             </a>
         </div>
@@ -78,15 +78,15 @@
                         </span>
                     </td>
                     <td>
-                        <a asp-controller="User" asp-action="DetailsUser" asp-route-id="@user.UserId" class="btn btn-success w-100 text-center">Details</a>
+                        <a asp-controller="User" asp-action="DetailsUser" asp-route-id="@user.UserId" class="btn btn-success w-100 text-center btn-outline-info me-2 text-light">📖 Details</a>
                     </td>
                     <td>
-                        <a asp-controller="User" asp-action="EditUser" asp-route-id="@user.UserId" class="btn btn-primary w-100 text-center">Edit</a>
+                        <a asp-controller="User" asp-action="EditUser" asp-route-id="@user.UserId" class="btn btn-primary w-100 text-center btn-outline-secondary me-2 text-light">✏️ Edit</a>
                     </td>
                     <td>
-                        <a class="btn btn-danger w-100 text-center"
+                        <a class="btn btn-danger w-100 text-center text-light"
                            onclick="openDeleteModal('User', @user.UserId, '@user.FullName')">
-                            Delete
+                            🗑️ Delete
                         </a>
                     </td>
                 </tr>

@@ -7,6 +7,7 @@ namespace LibraryManagementSystem.Controllers
     public class UserController : Controller
     {
         ApplicationDbContext  context;
+
         public UserController(ApplicationDbContext _context)
         {
             context = _context;
@@ -31,7 +32,8 @@ namespace LibraryManagementSystem.Controllers
         {
             if(ModelState.IsValid)
             {
-                if (userFromRequest.TierId == 0) userFromRequest.TierId = 1; 
+                if (userFromRequest.TierId == 0) userFromRequest.TierId = 1;
+
                 await context.Users.AddAsync(userFromRequest);
                 await context.SaveChangesAsync();
                 return RedirectToAction("Index");

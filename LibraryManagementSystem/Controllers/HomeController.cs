@@ -16,6 +16,7 @@ namespace LibraryManagementSystem.Controllers
             context = _context;
             _logger = logger;
         }
+      
 
         public async Task<IActionResult> Index()
         {
@@ -31,6 +32,10 @@ namespace LibraryManagementSystem.Controllers
             return View("AboutUs");
         }
 
+        public IActionResult Privacy()
+        {
+            return View("Privacy");
+        } 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Error()

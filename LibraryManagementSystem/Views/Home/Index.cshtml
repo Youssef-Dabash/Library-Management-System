@@ -4,8 +4,54 @@
 }
 
 <div class="text-center">
-    <h3 class="display-4">Welcome to the One Reader Library</h3>
+    <h3 class="display-4">📚 Welcome to the One Reader Library</h3>
+    <p class="lead text-muted">Manage your books, categories, and memberships with ease.</p>
    <hr />
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="row g-4 mb-4">
+        <!-- Users Card -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-info">👥 Users</h5>
+                    <p class="card-text">Add, update and manage all library users.</p>
+                    <a asp-controller="User" asp-action="Index" class="btn btn-outline-info w-100">View Users</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">📖 Books</h5>
+                    <p class="card-text">Browse, add, and manage library books.</p>
+                    <a asp-controller="Book" asp-action="Index" class="btn btn-outline-primary w-100">View Books</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-success">📂 Categories</h5>
+                    <p class="card-text">Organize books into categories for easy access.</p>
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-outline-success w-100">View Categories</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">💳 Memberships</h5>
+                    <p class="card-text">Manage library memberships and members.</p>
+                    <a asp-controller="MembershipTier" asp-action="Index" class="btn btn-outline-secondary w-100">View Memberships</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
 </div>
 
 

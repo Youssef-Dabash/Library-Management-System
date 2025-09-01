@@ -10,10 +10,10 @@
             🏷️ Categories
         </h2>
         <div class="class=" d-flex gap-2"">
-            <a asp-controller="Category" asp-action="AddCategory" class="btn btn-success px-4">
+            <a asp-controller="Category" asp-action="AddCategory" class="btn btn-success px-4 rounded-pill">
                 <i class="bi bi-plus-circle me-1"></i> Add New Category
             </a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 rounded-pill">
                 <i class="bi bi-arrow-left-circle me-1"></i> Back
             </a>
         </div>
@@ -43,8 +43,8 @@
                             <a asp-controller="Category" asp-action="DetailsCategory" asp-route-id="@category.CategoryId" class="btn btn-info w-100 text-center">View</a>
                         </td>
                         <td>
-                            <a class="btn btn-danger w-100 text-center"
-                               onclick="openDeleteModal('Category', @category.CategoryId, '@category.CategoryName')">
+                            <a class="btn btn-danger w-100 text-center text-light"
+                                onclick="openDeleteModal('Category', @category.CategoryId, '@category.CategoryName')">
                                 Delete
                             </a>
                         </td>

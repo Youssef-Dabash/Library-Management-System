@@ -12,10 +12,10 @@
             📚 All Books in Library
         </h2>
         <div class="class=" d-flex gap-2"">
-            <a asp-controller="Book" asp-action="AddBook" class="btn btn-success px-4">
+            <a asp-controller="Book" asp-action="AddBook" class="btn btn-success px-4 rounded-pill">
                 <i class="bi bi-plus-circle me-1"></i> Add New Book
             </a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 rounded-pill">
                 <i class="bi bi-arrow-circle me-1"></i> Back
             </a>
         </div>
@@ -46,15 +46,15 @@
                         </form>
                     </td>
                     <td>
-                        <a class="btn btn-info w-100 text-center" asp-action="DetailsBook" asp-route-id="@book.BookId">Details</a>
+                        <a asp-action="DetailsBook" asp-route-id="@book.BookId" class="btn btn-info w-100 text-center btn-outline-success me-2 text-dark">📖 Details</a>
                     </td>
                     <td>
-                        <a class="btn btn-primary w-100 text-center" asp-action="EditBook" asp-route-id="@book.BookId">Edit</a>
+                        <a asp-action="EditBook" asp-route-id="@book.BookId" class="btn btn-primary w-100 text-center btn-outline-secondary me-2 text-light">✏️ Edit</a>
                     </td>
                     <td>
-                        <a class="btn btn-danger w-100 text-center"
+                        <a class="btn btn-danger w-100 text-center text-light"
                            onclick="openDeleteModal('Book', @book.BookId, '@book.Title')">
-                            Delete
+                            🗑️ Delete
                         </a>
                     </td>
                 </tr>
@@ -64,5 +64,4 @@
 </div>
 
 @await Html.PartialAsync("_DeleteModal")
-
 
