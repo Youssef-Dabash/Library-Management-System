@@ -5,18 +5,17 @@
     ViewData["Title"] = "Index";
 }
 
-@* ➕ *@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-success">
             📚 All Books in Library
         </h2>
         <div class="class=" d-flex gap-2"">
-            <a asp-controller="Book" asp-action="AddBook" class="btn btn-success px-4 rounded-pill">
+            <a asp-controller="Book" asp-action="AddBook" class="btn btn-success px-4">
                 <i class="bi bi-plus-circle me-1"></i> Add New Book
             </a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 rounded-pill">
-                <i class="bi bi-arrow-circle me-1"></i> Back
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
+                <i class="bi bi-arrow-left-circle me-1"></i> Back
             </a>
         </div>
     </div> 
@@ -39,11 +38,13 @@
                 <tr>
                     <td>@book.Title</td>
                     <td>@book.Author</td>
-                    <td>@book.AvailableCopies</td>
+                    <td class="text-center available-copies">
+                        @book.AvailableCopies
+                    </td>
                     <td>
-                        <form asp-action="IncreaseCopies" asp-route-id="@book.BookId" method="post" style="display:inline">
-                            <button type="submit" class="btn btn-success w-100 text-center">+ Copy</button>
-                        </form>
+                        <button type="button" class="btn btn-success w-100 text-center add-copy-btn" data-id="@book.BookId">
+                            + Copy
+                        </button>
                     </td>
                     <td>
                         <a asp-action="DetailsBook" asp-route-id="@book.BookId" class="btn btn-info w-100 text-center btn-outline-success me-2 text-dark">📖 Details</a>
@@ -65,3 +66,32 @@
 
 @await Html.PartialAsync("_DeleteModal")
 
+
+@Html.AntiForgeryToken()
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+<script>
+    $(document).ready(function () {
+        $(".add-copy-btn").click(function () {
+            var bookId = $(this).data("id");
+            var btn = $(this);
+
+            $.ajax({
+                url: '/Book/IncreaseCopies/' + bookId,
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        var row = btn.closest("tr");
+                        row.find(".available-copies").text(data.newCopies);
+                    }
+                },
+                error: function () {
+                    alert("❌ Error while increasing copies.");
+                }
+            });
+        });
+    });
+</script>

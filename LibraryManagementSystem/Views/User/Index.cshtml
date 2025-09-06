@@ -9,10 +9,10 @@
             👤 All Users in Library
         </h2>
         <div class="class=" d-flex gap-2"">
-            <a asp-controller="User" asp-action="AddUser" class="btn btn-success px-4 rounded-pill">
+            <a asp-controller="User" asp-action="AddUser" class="btn btn-success px-4">
                 <i class="bi bi-plus-circle me-1"></i> Add New User
             </a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 rounded-pill">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
                 <i class="bi bi-arrow-left-circle me-1"></i> Back
             </a>
         </div>
@@ -25,6 +25,7 @@
                 <th class="text-center" >Address</th>
                 <th>Phone</th>
                 <th>Membership Tier</th>
+                <th>Books Available</th>
                 <th class="text-center">Status</th>
                 <th class="text-center">Details</th>
                 <th class ="text-center">Edit</th>
@@ -52,7 +53,7 @@
                     <td>@user.FullName</td>
                     <td class="text-center">@user.Address</td>
                     <td>@user.Phone</td>
-                    <td>
+                    <td class="text-center">
                         @if (user.MembershipTier?.TierId == 3)
                         {
                             <span style="color:red; font-weight:bold;">
@@ -72,6 +73,7 @@
                             </span>
                         }
                     </td>
+                    <td class="text-center">@user.NumBooksAvailable</td>
                     <td>
                         <span class="@(user.Status ? "btn btn-success" : "btn btn-danger") d-flex align-items-center justify-content-center h-100 w-100">
                             @(user.Status ? "Active" : "Inactive")

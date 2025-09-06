@@ -20,3 +20,11 @@ public class Borrowing
     public decimal FineAmount { get; set; }
     public string Status { get; set; } // Pending, Returned, Overdue...
 }
+//BorrowId → رقم العملية.
+//UserId / User → مين اللي استعار.
+//BookId / Book → الكتاب اللي اتسحب.
+//BorrowDate → يوم الاستعارة.
+//DueDate → آخر ميعاد تسليم.
+//ReturnDate → يوم التسليم الفعلي.
+//FineAmount → الغرامة (لو فيه).
+//Status → الحالة الحالية.

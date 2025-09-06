@@ -148,7 +148,6 @@ public class BookController : Controller
         book.AvailableCopies += 1;
         await context.SaveChangesAsync();
 
-        return RedirectToAction("Index", new { id = id });
+        return Json(new { success = true, newCopies = book.AvailableCopies });
     }
-
 }

@@ -21,6 +21,9 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var books = await context.Books.Include(b => b.Category).ToListAsync();
+            ViewBag.TotalBooks = await context.Books.CountAsync();
+            ViewBag.TotalUsers = await context.Users.CountAsync();
+            ViewBag.TotalCategories = await context.Categories.CountAsync();
             return View("Index", books);
         }
 

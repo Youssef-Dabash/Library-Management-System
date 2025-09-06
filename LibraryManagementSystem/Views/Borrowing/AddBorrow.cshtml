@@ -1,0 +1,55 @@
+﻿@model Borrowing
+
+<div class="container my-4 w-50">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-journal-plus me-2"></i> Add Borrow
+            </h4>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-controller="Borrowing" asp-action="SaveBorrow" method="post">
+
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-secondary">
+                        <i class="bi bi-person-circle me-2"></i> User Information
+                    </h5>
+                    <div class="card bg-light border-0 shadow-sm p-3 mt-2">
+                        <p class="mb-1"><strong>Name:</strong> @Model.User.FullName (@Model.User.UserName)</p>
+                        <p class="mb-1">
+                            <strong>Status:</strong>
+                            <span class="badge @(Model.User.Status ? "bg-success" : "bg-danger")">
+                                @(Model.User.Status ? "Active" : "Inactive")
+                            </span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Tier:</strong>
+                            <span class="badge bg-primary">@Model.User.MembershipTier.TierName</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="bi bi-book-half me-2"></i> Choose a Book
+                    </label>
+                    <select asp-for="BookId" class="form-select shadow-sm" asp-items="ViewBag.Books"></select>
+                </div>
+
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check2-circle me-1"></i> Confirm Borrow
+                    </button>
+                    <a asp-action="Index" asp-controller="Borrowing" class="btn btn-danger px-4">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Cancel
+                    </a>
+                </div>
+             
+            </form>
+        </div>
+    </div>
+</div>

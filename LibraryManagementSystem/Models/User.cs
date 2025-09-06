@@ -43,7 +43,7 @@ public class User
     [Display(Name = "Birth Date")]
     public DateTime? BirthOfDate { get; set; }
 
-    public bool Status { get; set; } // add db
+    public bool Status { get; set; } = true;
 
     [Required(ErrorMessage = "Tier is required.")]
     public int TierId { get; set; } 
@@ -54,5 +54,6 @@ public class User
     [ValidateNever]
     public ICollection<Borrowing> Borrowings { get; set; } = new List<Borrowing>();
 
+    public int NumBooksAvailable { get; set; }
 
 }

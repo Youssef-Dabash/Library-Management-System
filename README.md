@@ -56,7 +56,7 @@ The project is continuously evolving with multiple versions to include more feat
 
 ### 📊 Dashboard  
 
-![Dashboard](screenshots/dashboard.png)  
+![Dashboard](screenshots/home.jpg)  
 
 ---
 

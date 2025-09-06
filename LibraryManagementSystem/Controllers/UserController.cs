@@ -13,14 +13,12 @@ namespace LibraryManagementSystem.Controllers
             context = _context;
         }
 
-        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var userList = await context.Users.Include(e => e.MembershipTier).ToListAsync();
             return View("Index", userList);
         }
 
-        [HttpGet]
         public async Task<IActionResult> AddUser()
         {
             ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
@@ -30,9 +28,12 @@ namespace LibraryManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveUser(User userFromRequest)
         {
-            if(ModelState.IsValid)
+            var tier = await context.MembershipTiers
+            .FirstOrDefaultAsync(m => m.TierId == userFromRequest.TierId);
+            if (ModelState.IsValid)
             {
                 if (userFromRequest.TierId == 0) userFromRequest.TierId = 1;
+                userFromRequest.NumBooksAvailable = tier.ExtraBooks;
 
                 await context.Users.AddAsync(userFromRequest);
                 await context.SaveChangesAsync();
@@ -45,17 +46,23 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> DetailsUser(int id)
         {
             var user = await context.Users
-                .Include(b => b.MembershipTier)
-                .FirstOrDefaultAsync(b => b.UserId == id);
-            ViewBag.TierNames = user?.MembershipTier.TierName;
-            if (user == null) return NotFound();
+               .Include(u => u.MembershipTier)        
+               .Include(u => u.Borrowings)             
+                .ThenInclude(b => b.Book)         
+               .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
+                return NotFound();
+
+            ViewBag.TierNames = user.MembershipTier?.TierName.ToString() ?? "No Membership";
+
             return View("DetailsUser", user);
         }
 
-        [HttpGet]
         public async Task<IActionResult> EditUser(int id)
         {
             var getUser = await context.Users.FindAsync(id);
+
             if(getUser == null) return NotFound();
 
             ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
@@ -73,6 +80,9 @@ namespace LibraryManagementSystem.Controllers
                 if (getUser == null ) return NotFound();
                 if (userFromRequest.TierId == 0) userFromRequest.TierId = 1;
 
+                var tier = await context.MembershipTiers
+                           .FirstOrDefaultAsync(m => m.TierId == getUser.TierId);
+
                 getUser.FullName = userFromRequest.FullName;
                 getUser.UserName = userFromRequest.UserName;
                 getUser.Password = userFromRequest.Password;
@@ -83,6 +93,7 @@ namespace LibraryManagementSystem.Controllers
                 getUser.Status = userFromRequest.Status;
                 getUser.BirthOfDate = userFromRequest.BirthOfDate;
                 getUser.TierId = userFromRequest.TierId;
+                getUser.NumBooksAvailable = tier.ExtraBooks;
 
                 context.Users.Update(getUser);
                 await context.SaveChangesAsync();

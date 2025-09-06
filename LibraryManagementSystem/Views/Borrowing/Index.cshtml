@@ -1,7 +1,77 @@
-﻿
+﻿@model List<Borrowing>
+
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Borrowings";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-journal-bookmark me-2"></i> Borrowings
+        </h2>
+
+        <div class="class=" d-flex gap-2"">
+            <a asp-controller="Borrowing" asp-action="CheckUser" class="btn btn-success px-4">
+                <i class="bi bi-plus-circle me-1"></i> Add New Borrow
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
+                <i class="bi bi-arrow-left-circle me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped text-center align-middle shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Book</th>
+                <th>Borrow Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Fine</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.User.FullName</td>
+                    <td>@item.Book.Title</td>
+                    <td>@item.BorrowDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.DueDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        @if (item.Status == "Returned")
+                        {
+                            <span class="badge bg-success">@item.Status</span>
+                        }
+                        else if (item.DueDate < DateTime.Now && item.Status != "Returned")
+                        {
+                            <span class="badge bg-danger">Overdue</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">@item.Status</span>
+                        }
+                    </td>
+                    <td>@item.FineAmount.ToString("C")</td>
+                    <td>
+                        <a asp-action="DetailsBorrow" asp-route-id="@item.BorrowId" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Details
+                        </a>
+                        @if (item.Status != "Returned")
+                        {
+                            <a asp-action="ReturnBorrow" asp-route-id="@item.BorrowId"
+                               class="btn btn-success btn-sm"
+                               onclick="return confirm('Confirm return for this book?');">
+                                <i class="bi bi-arrow-return-left"></i> Return
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 

@@ -1,0 +1,52 @@
+﻿
+@model Borrowing
+
+<div class="container mt-4 w-50">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-journal-text"></i> Borrowing Details</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">User</dt>
+                <dd class="col-sm-9">@Model.User.FullName (@Model.User.UserName)</dd>
+
+                <dt class="col-sm-3">Membership Tier</dt>
+                <dd class="col-sm-9">@Model.User.MembershipTier.TierName</dd>
+
+                <dt class="col-sm-3">Book</dt>
+                <dd class="col-sm-9">@Model.Book.Title</dd>
+
+                <dt class="col-sm-3">Borrow Date</dt>
+                <dd class="col-sm-9">@Model.BorrowDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-3">Due Date</dt>
+                <dd class="col-sm-9">@Model.DueDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-3">Return Date</dt>
+                <dd class="col-sm-9">
+                    @(Model.ReturnDate.HasValue? Model.ReturnDate.Value.ToShortDateString() : "Not Returned")
+                </dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.Status == "Returned" ? "bg-success" : (Model.Status == "Overdue" ? "bg-danger" : "bg-warning"))">
+                        @Model.Status
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Fine</dt>
+                <dd class="col-sm-9">@Model.FineAmount.ToString("C")</dd>
+            </dl>
+        </div>
+
+        <div class="card-footer text-end d-flex justify-content-between mt-4">
+            <div>
+                <a class="btn btn-success px-4" asp-action="DetailsUser" asp-controller="User" asp-route-id="@Model.UserId" class="btn btn-secondary">Details User</a>
+            </div>
+            <div >
+                <a class="btn btn-info px-4" asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
