@@ -62,10 +62,18 @@
                         </a>
                         @if (item.Status != "Returned")
                         {
-                            <a asp-action="ReturnBorrow" asp-route-id="@item.BorrowId"
+                            <a href="javascript:void(0);"
                                class="btn btn-success btn-sm"
-                               onclick="return confirm('Confirm return for this book?');">
+                               onclick="openReturnModal(@item.BorrowId, '@item.Book.Title')">
                                 <i class="bi bi-arrow-return-left"></i> Return
+                            </a>
+
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger btn-sm"
+                               onclick="openDeleteModal('Borrowing', @item.BorrowId, 'this borrow')">
+                                <i class="bi bi-trash"></i> Delete
                             </a>
                         }
                     </td>
@@ -75,3 +83,5 @@
     </table>
 </div>
 
+@await Html.PartialAsync("_DeleteModal")
+@await Html.PartialAsync("ConfirmReturn")

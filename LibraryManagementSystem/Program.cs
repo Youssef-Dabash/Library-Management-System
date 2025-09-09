@@ -11,19 +11,11 @@ namespace LibraryManagementSystem
 
             builder.Services.AddControllersWithViews();
 
-            // add db context   
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")
                     )
                 );
-
-            // add session
-            //builder.Services.AddSession(
-            //    option => option.IOTimeout = TimeSpan.FromMinutes(10)
-            //    );
-
-            //builder.Services.AddScoped<>(); // add interfaces
 
             var app = builder.Build();
 
@@ -34,16 +26,11 @@ namespace LibraryManagementSystem
             }
             app.UseStaticFiles();
 
-            //app.UseSession();
-            //app.UseCookiePolicy();
-
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            //app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -8,35 +8,35 @@
         </div>
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-3">User</dt>
-                <dd class="col-sm-9">@Model.User.FullName (@Model.User.UserName)</dd>
+                <dt class="col-sm-4">User</dt>
+                <dd class="col-sm-8">@Model.User.FullName (@Model.User.UserName)</dd>
 
-                <dt class="col-sm-3">Membership Tier</dt>
-                <dd class="col-sm-9">@Model.User.MembershipTier.TierName</dd>
+                <dt class="col-sm-4">Membership Tier</dt>
+                <dd class="col-sm-8">@Model.User.MembershipTier.TierName</dd>
 
-                <dt class="col-sm-3">Book</dt>
-                <dd class="col-sm-9">@Model.Book.Title</dd>
+                <dt class="col-sm-4">Book</dt>
+                <dd class="col-sm-8">@Model.Book.Title</dd>
 
-                <dt class="col-sm-3">Borrow Date</dt>
-                <dd class="col-sm-9">@Model.BorrowDate.ToShortDateString()</dd>
+                <dt class="col-sm-4">Borrow Date</dt>
+                <dd class="col-sm-8">@Model.BorrowDate.ToShortDateString()</dd>
 
-                <dt class="col-sm-3">Due Date</dt>
-                <dd class="col-sm-9">@Model.DueDate.ToShortDateString()</dd>
+                <dt class="col-sm-4">Due Date</dt>
+                <dd class="col-sm-8">@Model.DueDate.ToShortDateString()</dd>
 
-                <dt class="col-sm-3">Return Date</dt>
-                <dd class="col-sm-9">
+                <dt class="col-sm-4">Return Date</dt>
+                <dd class="col-sm-8">
                     @(Model.ReturnDate.HasValue? Model.ReturnDate.Value.ToShortDateString() : "Not Returned")
                 </dd>
 
-                <dt class="col-sm-3">Status</dt>
-                <dd class="col-sm-9">
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8">
                     <span class="badge @(Model.Status == "Returned" ? "bg-success" : (Model.Status == "Overdue" ? "bg-danger" : "bg-warning"))">
                         @Model.Status
                     </span>
                 </dd>
+                <dt class="col-sm-4">Fine</dt>
+                <dd class="col-sm-8">@Model.FineAmount.ToString("C")</dd>
 
-                <dt class="col-sm-3">Fine</dt>
-                <dd class="col-sm-9">@Model.FineAmount.ToString("C")</dd>
             </dl>
         </div>
 

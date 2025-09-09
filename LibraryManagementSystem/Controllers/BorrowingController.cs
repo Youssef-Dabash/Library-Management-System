@@ -16,12 +16,30 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var borrowings = context.Borrowings
-                .Include(b => b.User)
-                .Include(b => b.Book);
-            var result = await borrowings.ToListAsync();
-            return View("Index", result);
+            var borrowings = await context.Borrowings
+                .Include(b => b.User).ThenInclude(u => u.MembershipTier)
+                .Include(b => b.Book)
+                .ToListAsync();
+
+            foreach (var b in borrowings)
+            {
+                if (b.Status != "Returned" && DateTime.Now > b.DueDate)
+                {
+                    b.Status = "Overdue";
+
+                    if (b.User?.MembershipTier != null)
+                    {
+                        int overdueDays = (DateTime.Now - b.DueDate).Days + 1;
+                        b.FineAmount = overdueDays * b.User.MembershipTier.ExtraPenalty;
+                    }
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            return View(borrowings);
         }
+
 
         public IActionResult CheckUser() => View("CheckUser");
 
@@ -66,7 +84,8 @@ namespace LibraryManagementSystem.Controllers
                 .FirstOrDefaultAsync(u => u.UserId == borrowing.UserId);
 
             var book = await context.Books.FindAsync(borrowing.BookId);
-          
+            
+
             borrowing.BorrowDate = DateTime.Now;
             borrowing.DueDate = borrowing.BorrowDate.AddDays(user.MembershipTier.ExtraDays);
             borrowing.Status = "Pending";
@@ -92,10 +111,7 @@ namespace LibraryManagementSystem.Controllers
                 .ThenInclude(u => u.MembershipTier)
                 .FirstOrDefaultAsync(b => b.BorrowId == id);
 
-            if (borrowing == null)
-            {
-                return NotFound();
-            }
+            if (borrowing == null)  return NotFound();
 
             if (borrowing.Status == "Returned")
             {
@@ -107,12 +123,7 @@ namespace LibraryManagementSystem.Controllers
             borrowing.ReturnDate = DateTime.Now;
             borrowing.User.NumBooksAvailable += 1;
             borrowing.Book.AvailableCopies += 1;
-
-            if (borrowing.DueDate < borrowing.ReturnDate)
-            {
-                var overdueDays = (borrowing.ReturnDate.Value - borrowing.DueDate).Days;
-                borrowing.FineAmount = overdueDays * borrowing.User.MembershipTier.ExtraPenalty;
-            }
+            borrowing.FineAmount = 0;
 
             context.Update(borrowing);
             await context.SaveChangesAsync();
@@ -128,13 +139,26 @@ namespace LibraryManagementSystem.Controllers
                 .ThenInclude(u => u.MembershipTier)
                 .Include(b => b.Book)
                 .FirstOrDefaultAsync(b => b.BorrowId == id);
-
-            if (borrowing == null)
-            {
-                return NotFound();
-            }
+        
+            if (borrowing == null) return NotFound();
 
             return View("DetailsBorrow", borrowing);
+        }
+
+        public async Task<IActionResult> DeleteBorrowing(int id)
+        {
+            var borrowing = await context.Borrowings
+                .Include(b => b.Book)
+                .Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.BorrowId == id);
+
+            if (borrowing == null) return NotFound();
+
+            context.Borrowings.Remove(borrowing);
+            await context.SaveChangesAsync();
+
+            TempData["Message"] = "Borrow record deleted successfully.";
+            return RedirectToAction(nameof(Index));
         }
 
     }
