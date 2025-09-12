@@ -8,7 +8,7 @@
         <h2 class="fw-bold text-success">
             👤 All Users in Library
         </h2>
-        <div class="class=" d-flex gap-2"">
+        <div class="d-flex gap-2">
             <a asp-controller="User" asp-action="AddUser" class="btn btn-success px-4">
                 <i class="bi bi-plus-circle me-1"></i> Add New User
             </a>
@@ -18,17 +18,17 @@
         </div>
     </div>
 
-    <table class="table table-bordered mt-3">
-        <thead style="background-color:#2c3e50; color:white;">
+    <table class="table table-bordered mt-3 table-auto">
+        <thead style="background-color:#2c3e50; color:white; white-space:nowrap;">
             <tr>
-                <th>Full Name</th>
-                <th class="text-center" >Address</th>
-                <th>Phone</th>
-                <th>Membership Tier</th>
-                <th>Books Available</th>
+                <th class="text-center">Full Name</th>
+                <th class="text-center">Address</th>
+                <th class="text-center">Phone</th>
+                <th class="text-center">Membership Tier</th>
+                <th class="text-center">Books Available</th>
                 <th class="text-center">Status</th>
                 <th class="text-center">Details</th>
-                <th class ="text-center">Edit</th>
+                <th class="text-center">Edit</th>
                 <th class="text-center">Delete</th>
             </tr>
         </thead>
@@ -36,57 +36,51 @@
             @for (int i = 0; i < Model.Count; i++)
             {
                 var user = Model[i];
-            
                 var rowColor = i % 2 == 0 ? "#ffffff" : "#eaf4ff";
 
-           
                 if (user.MembershipTier?.TierId == 3)
                 {
-                    rowColor = "#ffe6e6"; 
+                    rowColor = "#ffe6e6";
                 }
                 else if (user.MembershipTier?.TierId == 2)
                 {
-                    rowColor = "#fff7e6"; 
+                    rowColor = "#fff7e6";
                 }
 
-                <tr style="background-color:@rowColor;">
+                <tr style="background-color:@rowColor; white-space:nowrap;">
                     <td>@user.FullName</td>
                     <td class="text-center">@user.Address</td>
                     <td>@user.Phone</td>
                     <td class="text-center">
                         @if (user.MembershipTier?.TierId == 3)
                         {
-                            <span style="color:red; font-weight:bold;">
-                                VIP ⭐👑⭐
-                            </span>
+                            <span style="color:red; font-weight:bold;">VIP ⭐👑⭐</span>
                         }
                         else if (user.MembershipTier?.TierId == 2)
                         {
-                            <span style="color:orange; font-weight:bold;">
-                                Premium ⭐
-                            </span>
+                            <span style="color:orange; font-weight:bold;">Premium ⭐</span>
                         }
                         else
                         {
-                            <span style="color:green; font-weight:bold;">
-                                Normal
-                            </span>
+                            <span style="color:green; font-weight:bold;">Normal</span>
                         }
                     </td>
                     <td class="text-center">@user.NumBooksAvailable</td>
                     <td>
-                        <span class="@(user.Status ? "btn btn-success" : "btn btn-danger") d-flex align-items-center justify-content-center h-100 w-100">
+                        <span class="@(user.Status ? "btn btn-success" : "btn btn-danger") d-flex align-items-center justify-content-center">
                             @(user.Status ? "Active" : "Inactive")
                         </span>
                     </td>
                     <td>
-                        <a asp-controller="User" asp-action="DetailsUser" asp-route-id="@user.UserId" class="btn btn-success w-100 text-center btn-outline-info me-2 text-light">📖 Details</a>
+                        <a asp-controller="User" asp-action="DetailsUser" asp-route-id="@user.UserId"
+                           class="btn btn-success text-light">📖 Details</a>
                     </td>
                     <td>
-                        <a asp-controller="User" asp-action="EditUser" asp-route-id="@user.UserId" class="btn btn-primary w-100 text-center btn-outline-secondary me-2 text-light">✏️ Edit</a>
+                        <a asp-controller="User" asp-action="EditUser" asp-route-id="@user.UserId"
+                           class="btn btn-primary text-light">✏️ Edit</a>
                     </td>
                     <td>
-                        <a class="btn btn-danger w-100 text-center text-light"
+                        <a class="btn btn-danger text-light"
                            onclick="openDeleteModal('User', @user.UserId, '@user.FullName')">
                             🗑️ Delete
                         </a>
@@ -95,5 +89,6 @@
             }
         </tbody>
     </table>
-</div >
+</div>
+
 @await Html.PartialAsync("_DeleteModal")
