@@ -45,9 +45,9 @@
     <div class="col">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body">
-                <h5 class="card-title text-secondary">💳 Memberships</h5>
-                <p class="card-text">Manage library memberships and members.</p>
-                <a asp-controller="MembershipTier" asp-action="Index" class="btn btn-outline-secondary w-100">View Memberships</a>
+                <h5 class="card-title text-warning">📅 Borrowings</h5>
+                <p class="card-text">Track book borrowings, returns, and penalties.</p><br />
+                <a asp-controller="Borrowing" asp-action="Index" class="btn btn-outline-warning w-100">View Borrowings</a>
             </div>
         </div>
     </div>
@@ -55,16 +55,16 @@
     <div class="col">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body">
-                <h5 class="card-title text-warning">📅 Borrowings</h5>
-                <p class="card-text">Track book borrowings, returns, and penalties.</p><br />
-                <a asp-controller="Borrowing" asp-action="Index" class="btn btn-outline-warning w-100">View Borrowings</a>
+                <h5 class="card-title text-secondary">💳 Memberships</h5>
+                <p class="card-text">Manage library memberships and members.</p>
+                <a asp-controller="MembershipTier" asp-action="Index" class="btn btn-outline-secondary w-100">View Memberships</a>
             </div>
         </div>
     </div>
 </div>
 
 
-<div class="row text-center mt-5">
+<div class="row text-center mt-3">
     <div class="col-md-4 mb-3" data-aos="zoom-in">
         <div class="card border-0 shadow-lg p-4 rounded-4" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
             <div class="mb-2">
