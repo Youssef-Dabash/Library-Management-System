@@ -30,7 +30,8 @@
 
                 <dt class="col-sm-4">Status</dt>
                 <dd class="col-sm-8">
-                    <span class="badge @(Model.Status == "Returned" ? "bg-success" : (Model.Status == "Overdue" ? "bg-danger" : "bg-warning"))">
+                    <span class="badge @(Model.Status == "Returned" ? "bg-success" 
+                        : (Model.Status == "Overdue" ? "bg-danger" : "bg-warning"))">
                         @Model.Status
                     </span>
                 </dd>

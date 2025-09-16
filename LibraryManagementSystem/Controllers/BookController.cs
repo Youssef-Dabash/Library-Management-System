@@ -1,4 +1,5 @@
 ﻿using LibraryManagementSystem.Data;
+using LibraryManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,24 +9,24 @@ using System;
 public class BookController : Controller
 {
     private IWebHostEnvironment webHostEnvironment;
-    private ApplicationDbContext context;
-    public BookController(ApplicationDbContext _context, IWebHostEnvironment _webHostEnvironment)
+    private UnitOfWork unitOfWork;
+    public BookController(UnitOfWork _unitOfWork, IWebHostEnvironment _webHostEnvironment)
     {
-        context = _context;
+        unitOfWork = _unitOfWork;
         webHostEnvironment = _webHostEnvironment;
     }
 
     public async Task<IActionResult> Index()
     {
-        var books = await context.Books.Include(b => b.Category).ToListAsync(); // ?
+        var books = await unitOfWork.Books.GetAllWithCategoryAsync();
         return View("Index", books);
     }
 
     [HttpGet]
     public async Task<IActionResult> AddBook()
     {
-        ViewBag.Categories = await context.Categories.ToListAsync();
-        ViewBag.Borrowings = await context.Borrowings.ToListAsync();
+        ViewBag.Categories = await unitOfWork.Categories.GetAllAsync();
+        ViewBag.Borrowings = await unitOfWork.Borrowings.GetAllAsync();
         return View("AddBook");
     }
 
@@ -55,20 +56,18 @@ public class BookController : Controller
                 book.Image = "/Images/" + uniqueFileName;
             }
 
-            await context.Books.AddAsync(book);
-            await context.SaveChangesAsync();
+            await unitOfWork.Books.AddAsync(book);
+            await unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-        ViewBag.Categories = await context.Categories.ToListAsync();
-        ViewBag.Borrowings = await context.Borrowings.ToListAsync();
+        ViewBag.Categories = await unitOfWork.Categories.GetAllAsync();
+        ViewBag.Borrowings = await unitOfWork.Borrowings.GetAllAsync();
         return View("AddBook", book);
     }
 
     public async Task<IActionResult> DetailsBook(int id)
     {
-        var book = await context.Books
-            .Include(b => b.Category)
-            .FirstOrDefaultAsync(b => b.BookId == id);
+        var book = await unitOfWork.Books.GetWithCategoryAsync(id);
 
         if (book == null) return NotFound();
         return View("DetailsBook", book);
@@ -77,10 +76,10 @@ public class BookController : Controller
     [HttpGet]
     public async Task<IActionResult> EditBook(int id)
     {
-        var getBook = await context.Books.FindAsync(id);
+        var getBook = await unitOfWork.Books.GetByIdAsync(id);
         if (getBook == null) return NotFound();
 
-        ViewBag.Categories = await context.Categories.ToListAsync();
+        ViewBag.Categories = await unitOfWork.Categories.GetAllAsync();
         return View("EditBook", getBook);
     }
 
@@ -91,7 +90,7 @@ public class BookController : Controller
 
         if (ModelState.IsValid)
         {
-            var getBook = await context.Books.FindAsync(id);
+            var getBook = await unitOfWork.Books.GetByIdAsync(id);
             if (getBook == null) return NotFound();
 
             if (ImageFile != null && ImageFile.Length > 0)
@@ -120,33 +119,33 @@ public class BookController : Controller
             getBook.Description = bookFromRequest.Description;
             getBook.CategoryId = bookFromRequest.CategoryId == 0 ? 5 : bookFromRequest.CategoryId;
 
-            context.Books.Update(getBook);
-            await context.SaveChangesAsync();
+            unitOfWork.Books.Update(getBook);
+            await unitOfWork.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }
 
-        ViewBag.Categories = await context.Categories.ToListAsync();
+        ViewBag.Categories = await unitOfWork.Categories.GetAllAsync();
         return View(bookFromRequest);
     }
 
     [HttpPost]
     public async Task<IActionResult> DeleteBook(int id)
     {
-        var getBook = await context.Books.FindAsync(id);
-        context.Books.Remove(getBook);
-        await context.SaveChangesAsync();
+        var getBook = await unitOfWork.Books.GetByIdAsync(id);
+        unitOfWork.Books.Delete(getBook);
+        await unitOfWork.SaveChangesAsync();
         return RedirectToAction("Index");
     }
 
     [HttpPost]
     public async Task<IActionResult> IncreaseCopies(int id)
     {
-        var book = await context.Books.FindAsync(id);
+        var book = await unitOfWork.Books.GetByIdAsync(id);
         if (book == null) return NotFound();
 
         book.AvailableCopies += 1;
-        await context.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
 
         return Json(new { success = true, newCopies = book.AvailableCopies });
     }

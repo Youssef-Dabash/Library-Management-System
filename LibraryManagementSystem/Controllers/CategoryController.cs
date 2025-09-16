@@ -1,4 +1,5 @@
 ﻿using LibraryManagementSystem.Data;
+using LibraryManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,16 +7,15 @@ namespace LibraryManagementSystem.Controllers
 {
     public class CategoryController : Controller
     {
-        ApplicationDbContext context;
-        public CategoryController(ApplicationDbContext _context)
+        UnitOfWork unitOfWork;
+        public CategoryController(UnitOfWork unitOfWork)
         {
-            context = _context;
+            this.unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index()
         {
-            var categories = await context.Categories.Include(c => c.Books)
-                .ToListAsync();
+            var categories = await unitOfWork.Categories.GetAllAsync();
             return View("Index", categories);
         }
 
@@ -29,8 +29,8 @@ namespace LibraryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                await context.Categories.AddAsync(category);
-                await context.SaveChangesAsync();
+                await unitOfWork.Categories.AddAsync(category);
+                await unitOfWork.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -38,10 +38,7 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> DetailsCategory(int id)
         {
-            var category = await context.Categories
-                .Include(c => c.Books)
-                .FirstOrDefaultAsync(c => c.CategoryId == id);
-
+            var category = await unitOfWork.Categories.GetWithBooksAsync(id);
             if (category == null) return NotFound();
 
             return View("DetailsCategory", category);
@@ -49,12 +46,8 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var getCategory = await context.Categories.FindAsync(id);
-            if (getCategory != null)
-            {
-                context.Categories.Remove(getCategory);
-                await context.SaveChangesAsync();
-            }
+            await unitOfWork.Categories.DeleteAsync(id);
+            await unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

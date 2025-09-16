@@ -1,4 +1,5 @@
 ﻿using LibraryManagementSystem.Data;
+using LibraryManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,19 +8,16 @@ namespace LibraryManagementSystem.Controllers
 {
     public class BorrowingController : Controller
     {
-        ApplicationDbContext context;
+        UnitOfWork unitOfWork;
 
-        public BorrowingController(ApplicationDbContext context)
+        public BorrowingController(UnitOfWork unitOfWork)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index()
         {
-            var borrowings = await context.Borrowings
-                .Include(b => b.User).ThenInclude(u => u.MembershipTier)
-                .Include(b => b.Book)
-                .ToListAsync();
+            var borrowings = await unitOfWork.Borrowings.GetAllWithUserAndBookAsync();
 
             foreach (var b in borrowings)
             {
@@ -35,7 +33,7 @@ namespace LibraryManagementSystem.Controllers
                 }
             }
 
-            await context.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync();
 
             return View(borrowings);
         }
@@ -46,9 +44,8 @@ namespace LibraryManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CheckUser(User userInput)
         {
-            var user = await context.Users
-                .Include(u => u.MembershipTier)
-                .FirstOrDefaultAsync(u => u.UserName == userInput.UserName && u.Password == userInput.Password);
+            var user = await unitOfWork.Users
+                .GetByUserNameAndPasswordAsync(userInput.UserName, userInput.Password);
 
             if (user == null)
             {
@@ -71,7 +68,8 @@ namespace LibraryManagementSystem.Controllers
                 BorrowDate = DateTime.Now
             };
 
-            ViewBag.Books = new SelectList(context.Books.Where(b => b.AvailableCopies > 0), "BookId", "Title");
+            var availableBooks = await unitOfWork.Books.GetAvailableBooksAsync();
+            ViewBag.Books = new SelectList(availableBooks, "BookId", "Title");
 
             return View("AddBorrow", borrowing);
         }
@@ -79,11 +77,8 @@ namespace LibraryManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveBorrow(Borrowing borrowing)
         {
-            var user = await context.Users
-                .Include(u => u.MembershipTier)
-                .FirstOrDefaultAsync(u => u.UserId == borrowing.UserId);
-
-            var book = await context.Books.FindAsync(borrowing.BookId);
+            var user = await unitOfWork.Users.GetUserWithDetailsAsync(borrowing.UserId);
+            var book = await unitOfWork.Books.GetByIdAsync(borrowing.BookId);
             
 
             borrowing.BorrowDate = DateTime.Now;
@@ -94,22 +89,17 @@ namespace LibraryManagementSystem.Controllers
             user.NumBooksAvailable -= 1;
             book.AvailableCopies -= 1;
 
-            context.Add(borrowing);
-            await context.SaveChangesAsync();
+            await unitOfWork.Borrowings.AddAsync(borrowing);
+            await unitOfWork.SaveChangesAsync();
 
-            await context.Entry(borrowing).Reference(b => b.User).LoadAsync();
-            await context.Entry(borrowing).Reference(b => b.Book).LoadAsync();
-
-            return View("DetailsBorrow", borrowing);
+            var borrowingWithRelations = await unitOfWork.Borrowings
+                .GetByIdWithDetailsAsync(borrowing.BorrowId);
+            return View("DetailsBorrow", new { borrowing, borrowingWithRelations });
         }
 
         public async Task<IActionResult> ReturnBorrow(int id)
         {
-            var borrowing = await context.Borrowings
-                .Include(b => b.Book)
-                .Include(b => b.User)
-                .ThenInclude(u => u.MembershipTier)
-                .FirstOrDefaultAsync(b => b.BorrowId == id);
+            var borrowing = await unitOfWork.Borrowings.GetByIdWithDetailsAsync(id);
 
             if (borrowing == null)  return NotFound();
 
@@ -125,8 +115,8 @@ namespace LibraryManagementSystem.Controllers
             borrowing.Book.AvailableCopies += 1;
             borrowing.FineAmount = 0;
 
-            context.Update(borrowing);
-            await context.SaveChangesAsync();
+            unitOfWork.Borrowings.Update(borrowing);
+            await unitOfWork.SaveChangesAsync();
 
             TempData["Message"] = "Book returned successfully.";
             return RedirectToAction(nameof(Index));
@@ -134,12 +124,8 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> DetailsBorrow(int id)
         {
-            var borrowing = await context.Borrowings
-                .Include(b => b.User)
-                .ThenInclude(u => u.MembershipTier)
-                .Include(b => b.Book)
-                .FirstOrDefaultAsync(b => b.BorrowId == id);
-        
+            var borrowing = await unitOfWork.Borrowings.GetByIdWithDetailsAsync(id);
+
             if (borrowing == null) return NotFound();
 
             return View("DetailsBorrow", borrowing);
@@ -147,15 +133,12 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> DeleteBorrowing(int id)
         {
-            var borrowing = await context.Borrowings
-                .Include(b => b.Book)
-                .Include(b => b.User)
-                .FirstOrDefaultAsync(b => b.BorrowId == id);
+            var borrowing = await unitOfWork.Borrowings.GetByIdWithDetailsAsync(id);
 
             if (borrowing == null) return NotFound();
 
-            context.Borrowings.Remove(borrowing);
-            await context.SaveChangesAsync();
+            unitOfWork.Borrowings.Delete(borrowing);
+            await unitOfWork.SaveChangesAsync();
 
             TempData["Message"] = "Borrow record deleted successfully.";
             return RedirectToAction(nameof(Index));

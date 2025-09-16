@@ -1,4 +1,5 @@
 ﻿using LibraryManagementSystem.Data;
+using LibraryManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,50 +7,46 @@ namespace LibraryManagementSystem.Controllers
 {
     public class UserController : Controller
     {
-        ApplicationDbContext  context;
-
-        public UserController(ApplicationDbContext _context)
+        UnitOfWork unitOfWork;
+        public UserController(UnitOfWork unitOfWork)
         {
-            context = _context;
+            this.unitOfWork = unitOfWork;
         }
-
+        
         public async Task<IActionResult> Index()
         {
-            var userList = await context.Users.Include(e => e.MembershipTier).ToListAsync();
+            var userList = await unitOfWork.Users.GetAllWithMembershipAsync();
             return View("Index", userList);
         }
 
         public async Task<IActionResult> AddUser()
         {
-            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
+            ViewData["MembershipTier"] = await unitOfWork.MembershipTiers.ToListAsync();
             return View("AddUser");
         }
 
         [HttpPost]
         public async Task<IActionResult> SaveUser(User userFromRequest)
         {
-            var tier = await context.MembershipTiers
-            .FirstOrDefaultAsync(m => m.TierId == userFromRequest.TierId);
+            var tier = await unitOfWork.MembershipTiers
+            .FirstOrDefaultAsync(userFromRequest.TierId);
+
             if (ModelState.IsValid)
             {
                 if (userFromRequest.TierId == 0) userFromRequest.TierId = 1;
                 userFromRequest.NumBooksAvailable = tier.ExtraBooks;
 
-                await context.Users.AddAsync(userFromRequest);
-                await context.SaveChangesAsync();
+                await unitOfWork.Users.AddAsync(userFromRequest);
+                await unitOfWork.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
+            ViewData["MembershipTier"] = await unitOfWork.MembershipTiers.ToListAsync();
             return View("AddUser", userFromRequest);
         }
 
         public async Task<IActionResult> DetailsUser(int id)
         {
-            var user = await context.Users
-               .Include(u => u.MembershipTier)        
-               .Include(u => u.Borrowings)             
-                .ThenInclude(b => b.Book)         
-               .FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await unitOfWork.Users.GetUserWithDetailsAsync(id);
 
             if (user == null)
                 return NotFound();
@@ -61,11 +58,11 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> EditUser(int id)
         {
-            var getUser = await context.Users.FindAsync(id);
+            var getUser = await unitOfWork.Users.FindAsync(id);
 
             if(getUser == null) return NotFound();
 
-            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
+            ViewData["MembershipTier"] = await unitOfWork.MembershipTiers.ToListAsync();
             return View("EditUser", getUser);
         }
 
@@ -76,12 +73,12 @@ namespace LibraryManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                var getUser = await context.Users.FindAsync(id);
+                var getUser = await unitOfWork.Users.FindAsync(id);
                 if (getUser == null ) return NotFound();
                 if (userFromRequest.TierId == 0) userFromRequest.TierId = 1;
 
-                var tier = await context.MembershipTiers
-                           .FirstOrDefaultAsync(m => m.TierId == getUser.TierId);
+                var tier = await unitOfWork.MembershipTiers
+                           .FirstOrDefaultAsync(getUser.TierId);
 
                 getUser.FullName = userFromRequest.FullName;
                 getUser.UserName = userFromRequest.UserName;
@@ -95,21 +92,21 @@ namespace LibraryManagementSystem.Controllers
                 getUser.TierId = userFromRequest.TierId;
                 getUser.NumBooksAvailable = tier.ExtraBooks;
 
-                context.Users.Update(getUser);
-                await context.SaveChangesAsync();
+                unitOfWork.Users.Update(getUser);
+                await unitOfWork.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["MembershipTier"] = await context.MembershipTiers.ToListAsync();
+            ViewData["MembershipTier"] = await unitOfWork.MembershipTiers.ToListAsync();
             return View("EditUser", userFromRequest);
         }
 
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var getUser = await context.Users.FindAsync(id);  
+            var getUser = await unitOfWork.Users.FindAsync(id);  
             if (getUser != null)
             {
-                context.Users.Remove(getUser);
-                await context.SaveChangesAsync();
+                unitOfWork.Users.Delete(getUser);
+                await unitOfWork.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
