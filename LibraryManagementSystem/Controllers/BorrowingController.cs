@@ -92,9 +92,7 @@ namespace LibraryManagementSystem.Controllers
             await unitOfWork.Borrowings.AddAsync(borrowing);
             await unitOfWork.SaveChangesAsync();
 
-            var borrowingWithRelations = await unitOfWork.Borrowings
-                .GetByIdWithDetailsAsync(borrowing.BorrowId);
-            return View("DetailsBorrow", new { borrowing, borrowingWithRelations });
+            return View("DetailsBorrow", borrowing);
         }
 
         public async Task<IActionResult> ReturnBorrow(int id)
